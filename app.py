@@ -1,8 +1,14 @@
 from flask import Flask, render_template
+from os import getenv
 
+from dotenv import load_dotenv
 app = Flask(__name__)
 
 @app.route("/")
+load_dotenv()
+
+TELEGRAM_TOKEN = getenv("TELEGRAM_TOKEN")
+CHAT_ID = getenv("CHAT_ID")
 def index():
     current_page = "index"
     return render_template("index.j2", current_page=current_page)
