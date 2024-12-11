@@ -1,20 +1,22 @@
-from flask import Flask, render_template
 from os import getenv
 
 from dotenv import load_dotenv
+from flask import Flask, jsonify, render_template, request
+from requests import get
+
 app = Flask(__name__)
 
-@app.route("/")
 load_dotenv()
 
 TELEGRAM_TOKEN = getenv("TELEGRAM_TOKEN")
 CHAT_ID = getenv("CHAT_ID")
+
+@app.get("/")
 def index():
     current_page = "index"
     return render_template("index.j2", current_page=current_page)
 
 
-@app.route("/о-нас")
 @app.post("/feedback")
 def feedback():
     # TODO: переписать на flask-wtforms
@@ -51,12 +53,13 @@ def feedback():
     return jsonify({"status": "error", "message": "Произошла ошибка."}), 500
 
 
+@app.get("/о-нас")
 def about():
     current_page = "about"
     return render_template("about.j2", current_page=current_page)
 
 
-@app.route("/контакты")
+@app.get("/контакты")
 def contacts():
     current_page = "contacts"
     return render_template("contacts.j2", current_page=current_page)
