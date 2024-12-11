@@ -27,4 +27,45 @@
 
     <button type="submit" class="btn btn-primary">Отправить</button>
   </form>
+
+  {# TODO: перенести в отдельный файл #}
+  <script>
+    const showAlert = (message, type, alertPlaceholder) => {
+      const wrapper = document.createElement('div')
+      wrapper.innerHTML = [
+        `<div class="alert alert-${type} alert-dismissible" role="alert">`,
+        `   <div>${message}</div>`,
+        '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+        '</div>'
+      ].join('')
+
+      alertPlaceholder.insertAdjacentElement('afterbegin', wrapper);
+    }
+
+    const formEl = document.querySelector('form');
+
+    const makeRequest = () => {
+      fetch(formEl.action, {
+        method: 'post',
+        body: new FormData(formEl),
+      }).then(response => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error(response.statusText);
+        }
+      }).then(data => {
+        formEl.reset();
+        showAlert(data.message, 'success', formEl);
+      })
+      .catch(error => {
+        showAlert(`Произошла ошибка: ${error}`, "danger", formEl);
+      })
+    }
+
+    formEl.addEventListener('submit', (evt) => {
+      evt.preventDefault();
+      makeRequest();
+    });
+  </script>
 {% endblock content %}
