@@ -3,5 +3,28 @@
 {% block content %}
   <h1>Контакты</h1>
   <p>Контактная информация.</p>
-  <p>Форма ОС.</p>
+
+  <form action="{{ url_for('feedback') }}" method="post">
+    <div class="mb-3">
+      <label for="name" class="form-label">Имя</label>
+      <input type="text" class="form-control" id="name" name="name">
+    </div>
+
+    <div class="mb-3">
+      <label for="email" class="form-label">Email</label>
+      <input type="email" class="form-control" id="email" name="email" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="message" class="form-label">Сообщение</label>
+      <textarea class="form-control" id="message" name="message" rows="4" required></textarea>
+    </div>
+
+    <div class="mb-3 form-check">
+      <input type="checkbox" class="form-check-input" id="newsletter" name="newsletter">
+      <label class="form-check-label" for="newsletter">Подписаться на новости</label>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Отправить</button>
+  </form>
 {% endblock content %}
