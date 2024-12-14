@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 load_dotenv()
 
-TELEGRAM_TOKEN = getenv("TELEGRAM_TOKEN")
+TELEGRAM_BOT_TOKEN = getenv("TELEGRAM_BOT_TOKEN")
 CHAT_ID = getenv("CHAT_ID")
 
 @app.get("/")
@@ -35,7 +35,7 @@ def feedback():
     Подписка на рассылку: {newsletter}\n"""
 
     # URL для отправки GET-запроса к Telegram API
-    url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
+    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
 
     # Параметры запроса
     params = {
