@@ -17,7 +17,7 @@
 
     <div class="mb-3">
       <label for="message" class="form-label">Сообщение</label>
-      <textarea class="form-control" id="message" name="message" rows="4" required></textarea>
+      <textarea class="form-control" id="message" name="message" rows="4"></textarea>
     </div>
 
     <div class="mb-3 form-check">
@@ -29,43 +29,5 @@
   </form>
 
   {# TODO: перенести в отдельный файл #}
-  <script>
-    const showAlert = (message, type, alertPlaceholder) => {
-      const wrapper = document.createElement('div')
-      wrapper.innerHTML = [
-        `<div class="alert alert-${type} alert-dismissible" role="alert">`,
-        `   <div>${message}</div>`,
-        '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
-        '</div>'
-      ].join('')
-
-      alertPlaceholder.insertAdjacentElement('afterbegin', wrapper);
-    }
-
-    const formEl = document.querySelector('form');
-
-    const makeRequest = () => {
-      fetch(formEl.action, {
-        method: 'post',
-        body: new FormData(formEl),
-      }).then(response => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          throw new Error(response.statusText);
-        }
-      }).then(data => {
-        formEl.reset();
-        showAlert(data.message, 'success', formEl);
-      })
-      .catch(error => {
-        showAlert(`Произошла ошибка: ${error}`, "danger", formEl);
-      })
-    }
-
-    formEl.addEventListener('submit', (evt) => {
-      evt.preventDefault();
-      makeRequest();
-    });
-  </script>
+  <script src="{{ url_for('static', filename='js/contact.js') }}"></script>
 {% endblock content %}
