@@ -75,5 +75,6 @@ def about():
 
 @app.get("/контакты")
 def contacts():
+    form = FeedbackForm()
     current_page = "contacts"
-    return render_template("contacts.j2", current_page=current_page)
+    return render_template("contacts.j2", current_page=current_page, form=form)
