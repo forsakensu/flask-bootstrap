@@ -5,25 +5,27 @@
   <p>Контактная информация.</p>
 
   <form action="{{ url_for('feedback') }}" method="post">
+
     {{ form.hidden_tag() }}
+
     <div class="mb-3">
-      {{ form.name(class="form-control" id="name") }}
-      {{ form.name.label(class="form-label") }}
+      {{ form.name(class="form-control", id="name") }}
+      {{ form.name.label(class="form-label", for="name") }}
     </div>
 
     <div class="mb-3">
-      {{ form.email(class="form-control" id="email") }}
-      {{ form.email.label(class="form-label") }}
+      {{ form.email(class="form-control", id="email") }}
+      {{ form.email.label(class="form-label", for="email") }}
     </div>
 
     <div class="mb-3">
-      {{ form.message_content(class="form-control" id="message" rows="4") }}
-      {{ form.message_content.label(class="form-label") }}
+      {{ form.message(class="form-control", id="message", rows=4) }}
+      {{ form.message.label(class="form-label", for="message") }}
     </div>
 
     <div class="mb-3 form-check">
-      {{ form.newsletter(class="form-check-input" id="newsletter") }}
-      {{ form.newsletter.label(class="form-check-label") }}
+      {{ form.newsletter(class="form-check-input", id="newsletter") }}
+      {{ form.newsletter.label(class="form-check-label", for="newsletter") }}
     </div>
 
     {{ form.submit(class="btn btn-primary") }}
