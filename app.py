@@ -1,7 +1,7 @@
 from os import getenv
 
 from dotenv import load_dotenv
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, render_template, request, redirect
 from flask_wtf import FlaskForm
 from requests import get
 from wtforms import StringField, SubmitField, EmailField, TextAreaField, BooleanField
@@ -62,6 +62,8 @@ def feedback():
 
     # Проверим успешность запроса
     if response.status_code == 200:
+        if request.headers.get("X-Requested-With") != "XMLHttpRequest":
+            return redirect("/confirm")
         message = f"{name}, я отправил твою форму" if name else "Я отправил твою форму"
         return jsonify({"status": "success", "message": message}), 200
     return jsonify({"status": "error", "message": "Произошла ошибка."}), 500
@@ -78,3 +80,8 @@ def contacts():
     form = FeedbackForm()
     current_page = "contacts"
     return render_template("contacts.j2", current_page=current_page, form=form)
+
+@app.get("/confirm")
+def confirm():
+    current_page = "confirm"
+    return render_template("confirm.j2", current_page=current_page)
