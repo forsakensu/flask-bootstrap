@@ -5,67 +5,32 @@
   <p>Контактная информация.</p>
 
   <form action="{{ url_for('feedback') }}" method="post">
+
+    {{ form.hidden_tag() }}
+
     <div class="mb-3">
-      <label for="name" class="form-label">Имя</label>
-      <input type="text" class="form-control" id="name" name="name">
+      {{ form.name(class="form-control", id="name") }}
+      {{ form.name.label(class="form-label", for="name") }}
     </div>
 
     <div class="mb-3">
-      <label for="email" class="form-label">Email</label>
-      <input type="email" class="form-control" id="email" name="email" required>
+      {{ form.email(class="form-control", id="email") }}
+      {{ form.email.label(class="form-label", for="email") }}
     </div>
 
     <div class="mb-3">
-      <label for="message" class="form-label">Сообщение</label>
-      <textarea class="form-control" id="message" name="message" rows="4" required></textarea>
+      {{ form.message(class="form-control", id="message", rows=4) }}
+      {{ form.message.label(class="form-label", for="message") }}
     </div>
 
     <div class="mb-3 form-check">
-      <input type="checkbox" class="form-check-input" id="newsletter" name="newsletter">
-      <label class="form-check-label" for="newsletter">Подписаться на новости</label>
+      {{ form.newsletter(class="form-check-input", id="newsletter") }}
+      {{ form.newsletter.label(class="form-check-label", for="newsletter") }}
     </div>
 
-    <button type="submit" class="btn btn-primary">Отправить</button>
+    {{ form.submit(class="btn btn-primary") }}
   </form>
 
   {# TODO: перенести в отдельный файл #}
-  <script>
-    const showAlert = (message, type, alertPlaceholder) => {
-      const wrapper = document.createElement('div')
-      wrapper.innerHTML = [
-        `<div class="alert alert-${type} alert-dismissible" role="alert">`,
-        `   <div>${message}</div>`,
-        '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
-        '</div>'
-      ].join('')
-
-      alertPlaceholder.insertAdjacentElement('afterbegin', wrapper);
-    }
-
-    const formEl = document.querySelector('form');
-
-    const makeRequest = () => {
-      fetch(formEl.action, {
-        method: 'post',
-        body: new FormData(formEl),
-      }).then(response => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          throw new Error(response.statusText);
-        }
-      }).then(data => {
-        formEl.reset();
-        showAlert(data.message, 'success', formEl);
-      })
-      .catch(error => {
-        showAlert(`Произошла ошибка: ${error}`, "danger", formEl);
-      })
-    }
-
-    formEl.addEventListener('submit', (evt) => {
-      evt.preventDefault();
-      makeRequest();
-    });
-  </script>
+  <script src="{{ url_for('static', filename='js/contact.js') }}"></script>
 {% endblock content %}
