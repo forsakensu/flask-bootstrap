@@ -9,23 +9,23 @@
     {{ form.hidden_tag() }}
 
     <div class="mb-3">
-      {{ form.name(class="form-control", id="name") }}
       {{ form.name.label(class="form-label", for="name") }}
+      {{ form.name(class="form-control", id="name") }}
     </div>
 
     <div class="mb-3">
-      {{ form.email(class="form-control", id="email") }}
       {{ form.email.label(class="form-label", for="email") }}
+      {{ form.email(class="form-control", id="email") }}
     </div>
 
     <div class="mb-3">
-      {{ form.message(class="form-control", id="message", rows=4) }}
       {{ form.message.label(class="form-label", for="message") }}
+      {{ form.message(class="form-control", id="message", rows=4) }}
     </div>
 
     <div class="mb-3 form-check">
-      {{ form.newsletter(class="form-check-input", id="newsletter") }}
       {{ form.newsletter.label(class="form-check-label", for="newsletter") }}
+      {{ form.newsletter(class="form-check-input", id="newsletter") }}
     </div>
 
     {{ form.submit(class="btn btn-primary") }}
