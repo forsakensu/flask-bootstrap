@@ -6,17 +6,25 @@ const showAlert = (message, type, alertPlaceholder) => {
     '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
     "</div>",
   ].join("");
-
   alertPlaceholder.insertAdjacentElement("afterbegin", wrapper);
+  setTimeout(() => {
+    wrapper.remove();
+  }, 5000);
 };
 
 const formEl = document.querySelector("form");
 
+const myHeaders = new Headers();
+myHeaders.append("Content-Type", "application/json");
+
 const makeRequest = async () => {
+  const form_data = JSON.stringify(Object.fromEntries(new FormData(formEl)));
+  console.log(form_data);
   try {
     const response = await fetch(formEl.action, {
       method: "post",
-      body: new FormData(formEl),
+      headers: myHeaders,
+      body: form_data,
     });
     if (!response.ok) {
       throw new Error(response.statusText);
