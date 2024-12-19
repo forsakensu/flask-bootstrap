@@ -1,10 +1,10 @@
 from os import getenv
 
 from dotenv import load_dotenv
-from flask import Flask, jsonify, render_template, request, redirect
+from flask import Flask, jsonify, redirect, render_template, request
 from flask_wtf import FlaskForm
 from requests import get
-from wtforms import StringField, SubmitField, EmailField, TextAreaField, BooleanField
+from wtforms import BooleanField, EmailField, StringField, SubmitField, TextAreaField
 from wtforms.validators import DataRequired, Email, Length
 
 app = Flask(__name__)
@@ -13,7 +13,8 @@ load_dotenv()
 
 TELEGRAM_BOT_TOKEN = getenv("TELEGRAM_BOT_TOKEN")
 CHAT_ID = getenv("CHAT_ID")
-app.secret_key = 'dev'
+app.secret_key = "dev"
+
 
 @app.get("/")
 def index():
@@ -22,11 +23,12 @@ def index():
 
 
 class FeedbackForm(FlaskForm):
-    name = StringField('Имя', validators=[DataRequired()])
-    email = EmailField('Email', validators=[DataRequired(), Email()])
-    message = TextAreaField('Сообщение', validators=[Length(max=500)])
-    newsletter = BooleanField('Подписка на рассылку')
-    submit = SubmitField('Отправить')
+    name = StringField("Имя", validators=[DataRequired()])
+    email = EmailField("Email", validators=[DataRequired(), Email()])
+    message = TextAreaField("Сообщение", validators=[Length(max=500)])
+    newsletter = BooleanField("Подписка на рассылку")
+    submit = SubmitField("Отправить")
+
 
 @app.post("/feedback")
 def feedback():
@@ -52,10 +54,7 @@ def feedback():
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
 
     # Параметры запроса
-    params = {
-        "chat_id": CHAT_ID,
-        "text": message
-    }
+    params = {"chat_id": CHAT_ID, "text": message}
 
     # Отправка GET-запроса к Telegram API
     response = get(url, params=params, timeout=1000)
@@ -80,6 +79,7 @@ def contacts():
     form = FeedbackForm()
     current_page = "contacts"
     return render_template("contacts.j2", current_page=current_page, form=form)
+
 
 @app.get("/confirm")
 def confirm():
