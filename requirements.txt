@@ -1,4 +1,8 @@
 flask
+flask-bcrypt
+flask-login
+flask-migrate
+flask-sqlalchemy
 flask-wtf
 python-dotenv
 requests
