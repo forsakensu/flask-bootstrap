@@ -1,0 +1,15 @@
+{% extends "base.j2" %}
+
+{% block content %}
+  <h1>Результаты заполнения форм</h1>
+  {% for feedback in feedbacks %}
+    <div class="card mb-3">
+      <h5 class="card-header">{{ feedback.name }} <small>id: {{ feedback.id }}</small></h5>
+      <div class="card-body">
+        <h5 class="card-title">Сообщение пользователя</h5>
+        <p class="card-text">{{ feedback.message }}</p>
+      </div>
+    </div>
+  {% endfor %}
+  <a href="{{ url_for('index') }}" class="btn btn-primary mt-3">Вернуться на главную</a>
+{% endblock content %}

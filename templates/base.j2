@@ -12,6 +12,7 @@
       <aside class="col-3">
         <h2>Навигация</h2>
         <p>Текущая страница: {{ current_page }}</p>
+        <p>Текущий пользователь: {{ current_user.username or "Гость" }}</p>
         <ul class="nav nav-underline flex-column">
           <li class="nav-item">
             <a class="nav-link{% if current_page == 'index' %} active{% endif %}" aria-current="page" href="{{ url_for('index') }}">Главная</a>
