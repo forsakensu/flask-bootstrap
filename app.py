@@ -9,7 +9,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from requests import get
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from wtforms import BooleanField, EmailField, StringField, SubmitField, TextAreaField
+from wtforms import BooleanField, EmailField, StringField, SubmitField, TextAreaField, PasswordField
 from wtforms.validators import DataRequired, Email, Length
 
 app = Flask(__name__)
@@ -18,6 +18,7 @@ load_dotenv()
 
 REQUEST_TIMEOUT = 1000
 STATUS_OK = 200
+STATUS_ERROR = 500
 TELEGRAM_BOT_TOKEN = getenv("TELEGRAM_BOT_TOKEN")
 CHAT_ID = getenv("CHAT_ID")
 
@@ -39,6 +40,7 @@ migrate.init_app(app, db)
 bcrypt.init_app(app)
 login_manager = LoginManager(app)
 login_manager.login_view = "login"
+
 
 
 @login_manager.user_loader
@@ -68,6 +70,7 @@ class Feedback(db.Model):
 
 @app.get("/")
 def index():
+    db.create_all()
     current_page = "index"
     return render_template("index.j2", current_page=current_page)
 
@@ -78,6 +81,20 @@ class FeedbackForm(FlaskForm):
     message = TextAreaField("Сообщение", validators=[Length(max=500)])
     newsletter = BooleanField("Подписка на рассылку")
     submit = SubmitField("Отправить")
+
+
+class RegistrationForm(FlaskForm):
+    username = StringField("Логин", validators=[DataRequired(), Length(min=3, max=80)])
+    password = PasswordField("Пароль", validators=[DataRequired(), Length(min=6)])
+    first_name = StringField("Имя", validators=[DataRequired()])
+    last_name = StringField("Фамилия", validators=[DataRequired()])
+    email = EmailField("Email", validators=[DataRequired(), Email()])
+    phone = StringField("Телефон", validators=[Length(max=20)])
+    submit = SubmitField("Зарегистрироваться")
+
+class LoginForm(FlaskForm):
+    username = StringField("Логин", validators=[DataRequired()])
+    password = PasswordField("Пароль", validators=[DataRequired()])
 
 
 @app.post("/feedback")
@@ -125,10 +142,10 @@ def feedback():
         if not request.is_json:
             return redirect(url_for("confirm"))
         message = f"{name}, я отправил твою форму" if name else "Я отправил твою форму"
-        return jsonify({"status": "success", "message": message}), 200
+        return jsonify({"status": "success", "message": message}), STATUS_OK
     if request.is_json:
-        return jsonify({"status": "error", "message": "Произошла ошибка."}), 500
-    return render_template("error.j2"), 500
+        return jsonify({"status": "error", "message": "Произошла ошибка."}), STATUS_ERROR
+    return render_template("error.j2"), STATUS_ERROR
 
 
 @app.get("/о-нас")
@@ -160,51 +177,48 @@ def form_results():
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
+    reg_form = RegistrationForm()
     if request.method == "POST":
-        username = request.form["username"]
-        password = bcrypt.generate_password_hash(request.form["password"]).decode("utf-8")
+        username = reg_form.username.data
+        existing_user = db.session.execute(db.select(User).filter_by(username=username)).scalar_one_or_none()
+        if existing_user:
+            return render_template("register.j2", form=reg_form)
+        password = bcrypt.generate_password_hash(reg_form.password.data).decode("utf-8")
         new_user = User(
             username=username,
             password=password,
-            first_name="a",  # request.form["first_name"],
-            last_name="b",  # request.form["last_name"],
-            phone="c",  # request.form["phone"],
-            email="d@d",  # request.form["email"],
+            first_name=reg_form.first_name.data,
+            last_name=reg_form.last_name.data,
+            email=reg_form.email.data,
+            phone=reg_form.phone.data,
         )
         db.session.add(new_user)
         db.session.commit()
+
         return redirect(url_for("login"))
-    return """
-        <form method="POST">
-            Логин: <input type="text" name="username" required><br>
-            Пароль: <input type="password" name="password" required><br>
-            <input type="submit" value="Register">
-        </form>
-    """
+
+    return render_template("register.j2", form=reg_form)
+
 
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    login_form = LoginForm()
     if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
+        username = login_form.username.data
+        password = login_form.password.data
         # TODO: переписать на новый синтаксис
-        user = User.query.filter_by(username=username).first()
+        user = db.session.query(User).filter_by(username=username).first()
         if user and bcrypt.check_password_hash(user.password, password):
             login_user(user)
             return redirect(url_for("form_results"))
         return "Неправильный логин или пароль!"
-    return """
-        <form method="post">
-            Логин: <input type="text" name="username" required><br>
-            Пароль: <input type="password" name="password" required><br>
-            <input type="submit" value="Login">
-        </form>
-    """
+    return render_template("login.j2", form=login_form)
+
 
 
 @app.route("/logout")
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for("login"))
+    return redirect(url_for('login'))
